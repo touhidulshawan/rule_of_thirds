@@ -1,0 +1,393 @@
+#+TITLE: Rule of Thirds - Krita Plugin
+#+AUTHOR: Touhidul Shawan 
+#+DESCRIPTION: A simple Rule of Thirds composition grid plugin for Krita.
+#+OPTIONS: toc:3 num:nil
+#+STARTUP: showall
+
+* TABLE OF CONTENTS :toc:
+- [[#rule-of-thirds-for-krita][Rule of Thirds for Krita]]
+  - [[#features][Features]]
+  - [[#compatibility][Compatibility]]
+- [[#preview][Preview]]
+- [[#installation][Installation]]
+  - [[#requirements][Requirements]]
+  - [[#method-1-clone-the-github-repository][Method 1: Clone the GitHub repository]]
+  - [[#method-2-download-zip][Method 2: Download ZIP]]
+  - [[#find-the-krita-resource-folder][Find the Krita resource folder]]
+  - [[#operating-system-paths][Operating system paths]]
+  - [[#copy-plugin-files][Copy plugin files]]
+  - [[#enable-the-plugin][Enable the plugin]]
+  - [[#open-the-docker][Open the Docker]]
+- [[#usage][Usage]]
+  - [[#1-open-a-document][1. Open a document]]
+  - [[#2-show-grid][2. Show Grid]]
+  - [[#3-hide-grid][3. Hide Grid]]
+  - [[#4-refresh-grid][4. Refresh Grid]]
+  - [[#5-export-artwork][5. Export artwork]]
+- [[#how-the-grid-works][How the Grid Works]]
+- [[#important-notes][Important Notes]]
+  - [[#separate-grid-layer][Separate Grid Layer]]
+  - [[#grid-layer][Grid Layer]]
+  - [[#color-and-opacity][Color and Opacity]]
+  - [[#color-space][Color Space]]
+- [[#troubleshooting][Troubleshooting]]
+  - [[#plugin-does-not-appear-in-python-plugin-manager][Plugin does not appear in Python Plugin Manager]]
+  - [[#pyqt5-module-cannot-be-loaded][PyQt5 module cannot be loaded]]
+  - [[#docker-registration-error][Docker registration error]]
+  - [[#grid-does-not-appear][Grid does not appear]]
+  - [[#duplicate-grid-layers][Duplicate grid layers]]
+  - [[#grid-appears-in-exported-images][Grid appears in exported images]]
+- [[#project-structure][Project Structure]]
+- [[#development][Development]]
+  - [[#reporting-bugs][Reporting bugs]]
+  - [[#contributing][Contributing]]
+- [[#acknowledgements][Acknowledgements]]
+- [[#author][Author]]
+- [[#disclaimer][Disclaimer]]
+
+* Rule of Thirds for Krita
+
+A lightweight Python plugin for Krita that adds a Rule of Thirds composition grid to the current document.
+
+The plugin creates a separate transparent paint layer containing four grid lines. The grid divides the canvas into nine equal sections, helping artists compose illustrations, paintings, photographs, and digital artwork.
+
+** Features
+
+- Displays a Rule of Thirds composition grid.
+- Automatically calculates grid positions using canvas dimensions.
+- Creates a separate transparent grid layer.
+- Keeps the grid independent of brush strokes.
+- Locks the grid layer to prevent accidental painting.
+- Show and hide the grid without recreating it.
+- Refreshes the grid after canvas resizing.
+- Does not modify existing artwork layers.
+
+** Compatibility
+
+| Software | Version |
+|----------+---------|
+| Krita    | 6.0.4.1 (tested) |
+| Python   | Bundled with Krita |
+| Qt       | Qt 6 / PyQt6 build |
+
+Other Krita versions and operating systems may require additional testing.
+
+* Preview
+
+The plugin provides a simple Docker interface containing:
+
+- Current canvas dimensions.
+- Show Grid.
+- Hide Grid.
+- Refresh Grid.
+
+The grid consists of two vertical and two horizontal lines.
+
+* Installation
+
+** Requirements
+
+- Krita 6.0.4.1 or a compatible build.
+- Python plugin support enabled in Krita.
+- A writable Krita resources directory.
+
+No external Python packages should be necessary.
+
+** Method 1: Clone the GitHub repository
+
+Open a terminal and clone the repository:
+
+#+begin_src bash
+git clone https://github.com/touhidulshawan/rule_of_thirds.git
+#+end_src
+
+Enter the repository:
+
+#+begin_src bash
+cd rule_of_thirds
+#+end_src
+
+** Method 2: Download ZIP
+
+1. Open the GitHub repository.
+2. Click the green Code button.
+3. Select Download ZIP.
+4. Extract the downloaded archive.
+
+** Find the Krita resource folder
+
+Open Krita.
+
+Navigate to:
+
+Settings -> Manage Resources -> Open Resource Folder
+
+Find the =pykrita= directory.
+
+If it does not exist, create it.
+
+** Operating system paths
+
+*** Windows
+
+#+begin_src text
+%APPDATA%\krita\pykrita
+#+end_src
+
+*** Linux
+
+#+begin_src text
+~/.local/share/krita/pykrita
+#+end_src
+
+*** macOS
+
+#+begin_src text
+~/Library/Application Support/Krita/pykrita
+#+end_src
+
+The resource folder opened from Krita's interface is preferable if your installation uses a custom location.
+
+** Copy plugin files
+
+Copy the following files into the =pykrita= directory:
+
+#+begin_src text
+pykrita/
+|
+|-- rule_of_thirds.desktop
+|
+|-- rule_of_thirds/
+    |
+    |-- __init__.py
+    |
+    |-- rule_of_thirds.py
+#+end_src
+
+Make sure the desktop file and Python folder are at the same level.
+
+Do not put the desktop file inside the Python folder.
+
+** Enable the plugin
+
+1. Restart Krita.
+2. Open Settings.
+3. Select Configure Krita.
+4. Open Python Plugin Manager.
+5. Find Rule of Thirds.
+6. Enable the plugin.
+7. Restart Krita again.
+
+** Open the Docker
+
+After restarting Krita:
+
+Settings -> Dockers -> Rule of Thirds
+
+The plugin Docker should appear in the interface.
+
+* Usage
+
+** 1. Open a document
+
+Open an existing image or create a new document.
+
+The Docker displays the current canvas dimensions.
+
+Example:
+
+#+begin_src text
+Canvas: 1920 x 1080 px
+#+end_src
+
+** 2. Show Grid
+
+Click =Show Grid=.
+
+The plugin creates a separate transparent paint layer containing the Rule of Thirds grid.
+
+The grid is positioned at:
+
+- 33.33% of canvas width.
+- 66.67% of canvas width.
+- 33.33% of canvas height.
+- 66.67% of canvas height.
+
+** 3. Hide Grid
+
+Click =Hide Grid=.
+
+The grid layer becomes invisible.
+
+Your artwork remains unchanged.
+
+** 4. Refresh Grid
+
+If you resize the canvas, click =Refresh Grid=.
+
+The plugin recalculates the positions using the updated canvas dimensions.
+
+The existing plugin grid layer should be replaced rather than duplicated.
+
+** 5. Export artwork
+
+Before exporting your final artwork, hide the Rule of Thirds layer.
+
+Otherwise, the grid will be included in the exported image.
+
+* How the Grid Works
+
+For a canvas with width W and height H:
+
+Vertical guide positions:
+
+#+begin_src text
+X1 = W / 3
+X2 = 2W / 3
+#+end_src
+
+Horizontal guide positions:
+
+#+begin_src text
+Y1 = H / 3
+Y2 = 2H / 3
+#+end_src
+
+This creates nine equal rectangular sections.
+
+* Important Notes
+
+** Separate Grid Layer
+
+The plugin uses a dedicated paint layer rather than Krita's native guides.
+
+This prevents the grid from behaving like an editable guide while drawing.
+
+** Grid Layer
+
+The plugin uses the following internal layer name:
+
+#+begin_src text
+__Rule_of_Thirds_Overlay__
+#+end_src
+
+Avoid renaming this layer manually because the plugin uses its name to find and manage the grid.
+
+** Color and Opacity
+
+The current implementation uses a predefined grid color and opacity.
+
+These can be customized in the Python source code or you can change color and opacity of the layer manually(you know how to change opacity and color of drawing of a layer in krita right!!! :) ). But keep in mind that it will go in defaults when you press the Refresh grid button.
+
+** Color Space
+
+The current implementation supports RGBA 8-bit documents.
+
+Other color models and bit depths are not currently supported.
+
+* Troubleshooting
+
+** Plugin does not appear in Python Plugin Manager
+
+Check that:
+
+- The =rule_of_thirds.desktop= file is inside =pykrita=.
+- The =rule_of_thirds= folder is inside =pykrita=.
+- The folder contains =__init__.py=.
+- The plugin has been enabled.
+- Krita has been restarted.
+
+** PyQt5 module cannot be loaded
+
+This plugin targets a Qt 6 / PyQt6 Krita build.
+
+Do not install an unrelated system PyQt package into Krita's bundled Python environment.
+
+** Docker registration error
+
+The Krita 6.0.4.1 registration uses:
+
+#+begin_src python
+DockWidgetFactoryBase.DockPosition.DockRight
+#+end_src
+
+Do not substitute =DockWidgetFactory.DockRight=.
+
+** Grid does not appear
+
+Check that:
+
+- A document is open.
+- The document uses RGBA 8-bit color.
+- The grid layer exists in the Layers Docker.
+- The layer is visible.
+
+** Duplicate grid layers
+
+The plugin uses a reserved layer name to identify its grid layer.
+
+If duplicates appear, save a backup of the document and inspect the Layers Docker before manually deleting any layers.
+
+** Grid appears in exported images
+
+Hide the grid before exporting.
+
+* Project Structure
+
+#+begin_src text
+rule-of-thirds-krita/
+|
+|-- README.org
+|-- LICENSE
+|-- .gitignore
+|
+|-- rule_of_thirds.desktop
+|
+|-- rule_of_thirds/
+    |
+    |-- __init__.py
+    |
+    |-- rule_of_thirds.py
+#+end_src
+
+* Development
+
+Contributions, bug reports, and feature suggestions are welcome.
+
+** Reporting bugs
+
+When reporting a problem, include:
+
+- Krita version.
+- Operating system.
+- Error message or Python traceback.
+- Steps to reproduce the problem.
+- Document color model and bit depth, if relevant.
+
+** Contributing
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make your changes.
+4. Test with Krita.
+5. Submit a pull request.
+
+
+* Acknowledgements
+
+- Krita development team.
+- Krita Python scripting documentation.
+- Artists and testers who provide feedback.
+
+* Author
+AI with some My modification
+
+Maintained by Touhidul Shawan
+
+GitHub: https://github.com/touhidulshawan
+
+* Disclaimer
+
+This is an independent community plugin and is not an official Krita project.
+
+Always save a backup of important artwork before testing new plugin versions.
